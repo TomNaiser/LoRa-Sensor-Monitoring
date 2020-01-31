@@ -1,0 +1,20 @@
+(Re-)installation of Raspbian:
+download balena-Etcher (used for writing the image to a SD-card) to PC
+download Raspbian-image 
+selected the zipped imageFile in balena-Etcher 
+select your SD-Carde and write the image
+
+Install SD in the Raspberry Pi and install Raspbian
+
+setup Remote-Desktop:
+sudo apt-get purge realvnc-vnc-server
+sudo apt-get install xrdp
+sudo apt-get install spyder3
+sudo apt-get install kst
+
+
+setup python script autostart:
+sudo crontab -e
+open with nano
+enter the following line at the end:
+@reboot python /home/pi/PythonCodes/LoRaSensorMonitoringServer.py
