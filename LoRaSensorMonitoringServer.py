@@ -34,7 +34,7 @@ def appendLineToFile(filename,content):
 
     if os.path.isfile(filename)==False:
         with open(filename,"a") as myfile:
-            myfile.write("Posix-time\ttime\tSensorID\tweight\tvoltage\tRSSID\n")
+            myfile.write("Posix-Zeit\tSensorID\tGewicht\tSpannung\tRSSID\tZeit\n")
     else:
         with open(filename, "a") as myfile:
             myfile.write(content)
@@ -44,12 +44,12 @@ def appendLineToFile(filename,content):
             
 def getOutputDataLine(mySensorData):
     outputStr=""
-    outputStr=outputStr+str(mySensorData.receiveTimePosix)+"\t"        
-    outputStr=outputStr+str(mySensorData.receiveTime)+"\t"
+    outputStr=outputStr+str(mySensorData.receiveTimePosix)+"\t"          
     outputStr=outputStr+str(int(mySensorData.sensorID[0]))+"\t"
     outputStr=outputStr+str(mySensorData.weight[0])+"\t"
     outputStr=outputStr+str(mySensorData.voltage[0])+"\t"
-    outputStr=outputStr+str(int(mySensorData.RSSID[0]))+"\n"
+    outputStr=outputStr+str(int(mySensorData.RSSID[0]))+"\t"
+    outputStr=outputStr+str(mySensorData.receiveTime)+"\n" #put datetime to the last column, otherwise kst2 plot seems to confuse the columns
     return outputStr
         
     
@@ -61,9 +61,9 @@ def parseSerialInput(IDString,serialInputString):
 
 def convertDateTime(dt):
     timestring=""
-    timestring=timestring+str(dt.year-2000)+'/'
-    timestring=timestring+str(dt.month).zfill(2)+'/'
-    timestring=timestring+str(dt.day).zfill(2)+"-"
+    timestring=timestring+str(dt.year)+'-'
+    timestring=timestring+str(dt.month).zfill(2)+'-'
+    timestring=timestring+str(dt.day).zfill(2)+" "
     timestring=timestring+str(dt.hour).zfill(2)+":"
     timestring=timestring+str(dt.minute).zfill(2)+":"
     timestring=timestring+str(dt.second).zfill(2)
@@ -99,7 +99,7 @@ while 1:
             
             d = datetime.datetime.now()
             timeNow=time.mktime(d.timetuple()) #get posix time
-            currentSensorData.receiveTime=d
+            currentSensorData.receiveTime=convertDateTime(d)
             currentSensorData.receiveTimePosix=timeNow
              
             for paramString in parsedInput:
@@ -129,4 +129,52 @@ while 1:
         outputDataLine=getOutputDataLine(currentSensorData)
         print(outputDataLine)
         appendLineToFile(myDataFileName+'Sensor'+str(int(currentSensorData.sensorID[0]))+'.txt',outputDataLine)
-
+# =============================================================================
+#         SensorIDVal=parseSerialInput("Sensor ID",str(x))
+#       
+#         if SensorIDVal is not None:  
+#             datasetReady=True
+#             #timeNow=str(datetime.datetime.now())
+#             
+#             d = datetime.datetime.now()
+# 
+#             timeNow=time.mktime(d.timetuple())
+#             #timeNow=convertDateTime(datetime.datetime.now())
+#             print("Create new SensorDataSet with sensorID: ",SensorIDVal)
+#             newSensorData=sensorData(sensorID=SensorIDVal,receiveTime=timeNow)
+#             print("Created new SensorDataSet with sensorID: ",SensorIDVal)
+#             #append currentSensorData after the first Dataset has been read completely
+#             #Thats when SensorIDVal is call for the second time
+#             print ("CurrentSensorData: ",currentSensorData.sensorID)
+#             if currentSensorData.sensorID[0]>-1: # if the currentSensorData is not completely new...
+#                 measurements.append(currentSensorData)
+#                 outputDataLine=getOutputDataLine(currentSensorData)
+#                 csd=currentSensorData.sensorID
+#                 print ("Output: ",outputDataLine)
+#                 appendLineToFile(myDataFileName+'Sensor'+str(int(SensorIDVal[0]))+'.txt',outputDataLine)
+#                 
+# 
+#     
+#             currentSensorData=newSensorData
+#         
+#         if datasetReady:
+#             weightVal=parseSerialInput("Weight",str(x)) 
+#             if weightVal is not None:
+#                 currentSensorData.weight=weightVal
+#             
+#             voltageVal=parseSerialInput("Voltage",str(x))
+#             if voltageVal is not None:
+#                 currentSensorData.voltage=voltageVal
+#                 
+#             rssidVal=parseSerialInput("RSSID",str(x))
+#             if rssidVal is not None:
+#                 currentSensorData.RSSID=rssidVal
+#             
+#             swarmAlarmVal=parseSerialInput("Swarm Alarm",str(x))
+#             if swarmAlarmVal is not None:
+#                 currentSensorData.swarmAlarm=swarmAlarmVal
+#         
+# =============================================================================
+            
+        
+        
